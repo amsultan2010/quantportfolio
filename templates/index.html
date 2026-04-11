@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuantPortfolioPy — Multi-Asset Portfolio Backtester</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ===== HERO (split layout) ===== -->
+  <header class="hero">
+    <div class="hero-inner">
+
+      <!-- Left: headline + description -->
+      <div class="hero-left">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          QuantPy Series &nbsp;&middot;&nbsp; Project 2
+        </div>
+        <h1 class="hero-title">
+          <span class="t-green">Quant</span><br>
+          <span class="t-orange">Portfolio</span><br>
+          <span class="t-white">Py</span>
+        </h1>
+        <p class="hero-subtitle">
+          A multi-asset portfolio backtester powered by inverse-volatility risk parity weighting
+          and SMA crossover signals — test any basket of assets across any period.
+        </p>
+        <div class="hero-chips">
+          <span class="chip chip-green">Risk Parity Strategy</span>
+          <span class="chip-sep">&mdash;</span>
+          <span class="chip chip-orange">Equal-Weight Benchmark</span>
+        </div>
+      </div>
+
+      <!-- Right: feature list cards -->
+      <div class="hero-right">
+        <div class="feat-card">
+          <div class="feat-icon feat-icon-green">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M3 10l4 4 10-8"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="feat-title">Inverse-Vol Risk Parity</p>
+            <p class="feat-desc">Allocates capital in proportion to how stable each asset has been</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon feat-icon-orange">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <polyline points="2 14 7 8 11 11 15 5 18 7"></polyline>
+            </svg>
+          </div>
+          <div>
+            <p class="feat-title">SMA Crossover Signals</p>
+            <p class="feat-desc">Buy when Fast MA crosses above Slow MA — shifted to prevent look-ahead</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon feat-icon-green">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <rect x="2" y="2" width="16" height="16" rx="1"></rect>
+              <line x1="2" y1="8" x2="18" y2="8"></line>
+              <line x1="8" y1="8" x2="8" y2="18"></line>
+            </svg>
+          </div>
+          <div>
+            <p class="feat-title">Cross-Asset Correlation</p>
+            <p class="feat-desc">Visualise how your portfolio assets move relative to each other</p>
+          </div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon feat-icon-orange">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <circle cx="10" cy="10" r="8"></circle>
+              <path d="M10 6v4l3 2"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="feat-title">150-Point Parameter Scan</p>
+            <p class="feat-desc">Grid search every MA combination to find the optimal Sharpe Ratio</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /hero-inner -->
+
+    <div class="hero-scroll-hint">
+      <span>Build your portfolio below</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </header>
+
+  <!-- ===== LOADING OVERLAY ===== -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-ring">
+      <div></div><div></div><div></div><div></div>
+    </div>
+    <p id="loading-text" class="loading-text">Running simulation…</p>
+    <p id="loading-sub" class="loading-sub"></p>
+  </div>
+
+  <!-- ===== ERROR BANNER ===== -->
+  <div id="error-banner" class="error-banner hidden">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="flex-shrink:0">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <span id="error-message"></span>
+    <button class="banner-close" onclick="document.getElementById('error-banner').classList.add('hidden')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+
+  <!-- ===== WARN BANNER ===== -->
+  <div id="warn-banner" class="warn-banner hidden">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="flex-shrink:0">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+      <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+    <span id="warn-message"></span>
+    <button class="banner-close" onclick="document.getElementById('warn-banner').classList.add('hidden')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+
+  <!-- ===== TWO-PANEL APP ===== -->
+  <div class="app-body">
+
+    <!-- ── LEFT SIDEBAR ── -->
+    <aside class="config-sidebar">
+
+      <div class="sidebar-eyebrow">Configure Portfolio</div>
+      <p class="sidebar-desc">Enter your tickers and parameters, then run the backtest.</p>
+
+      <div class="form-fields">
+
+        <div class="field">
+          <label for="tickers">Tickers</label>
+          <input type="text" id="tickers"
+                 placeholder="AAPL, MSFT, GS, AMZN"
+                 value="AAPL, MSFT, GS, AMZN"
+                 autocomplete="off" spellcheck="false" />
+          <span class="field-hint">Comma-separated Yahoo Finance symbols</span>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="start-date">Start</label>
+            <input type="date" id="start-date" value="2015-01-01" />
+          </div>
+          <div class="field">
+            <label for="end-date">End</label>
+            <input type="date" id="end-date" value="2025-01-01" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="initial-capital">Starting Capital</label>
+          <div class="input-wrap">
+            <span class="input-pre">$</span>
+            <input type="number" id="initial-capital" value="10000" min="100" step="100" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            Fast MA &nbsp;<span class="slider-val" id="short-display">20</span><span class="slider-unit"> days</span>
+          </label>
+          <input type="range" id="short-window" class="slider" min="5" max="55" step="5" value="20" />
+          <div class="slider-bounds"><span>5</span><span>55</span></div>
+        </div>
+
+        <div class="field">
+          <label>
+            Slow MA &nbsp;<span class="slider-val" id="long-display">50</span><span class="slider-unit"> days</span>
+          </label>
+          <input type="range" id="long-window" class="slider" min="50" max="200" step="10" value="50" />
+          <div class="slider-bounds"><span>50</span><span>200</span></div>
+        </div>
+
+        <div class="field">
+          <label for="tx-cost">Transaction Cost</label>
+          <div class="input-wrap">
+            <input type="number" id="tx-cost" value="0.01" min="0" max="2" step="0.01" />
+            <span class="input-suf">% per trade</span>
+          </div>
+          <span class="field-hint">Applied on portfolio weight turnover</span>
+        </div>
+
+      </div><!-- /form-fields -->
+
+      <div class="sidebar-actions">
+        <button id="run-btn" class="btn-primary">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Run Backtest
+        </button>
+        <button id="optimize-btn" class="btn-secondary" disabled>
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Run Parameter Scan
+        </button>
+      </div>
+
+      <p class="sidebar-note">Look-ahead bias protected &middot; Risk parity weighted</p>
+
+      <div id="sidebar-legend" class="sidebar-legend hidden">
+        <div class="leg-item"><span class="leg-swatch leg-green"></span>Risk Parity Strategy</div>
+        <div class="leg-item"><span class="leg-swatch leg-orange"></span>Equal-Weight Benchmark</div>
+      </div>
+
+    </aside>
+
+    <!-- ── RIGHT RESULTS ── -->
+    <main class="results-panel">
+
+      <!-- Empty state -->
+      <div id="empty-state" class="empty-state">
+        <svg class="empty-chart-svg" viewBox="0 0 340 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="10,140 50,110 90,120 130,70 170,90 210,40 260,60 310,20 330,30"
+                    stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+          <polyline points="10,140 50,130 90,135 130,105 170,115 210,90 260,100 310,75 330,80"
+                    stroke="#F97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 4" opacity="0.4"/>
+          <circle cx="210" cy="40" r="4" fill="#22C55E" opacity="0.7"/>
+          <circle cx="310" cy="20" r="4" fill="#22C55E" opacity="0.7"/>
+        </svg>
+        <h3>No backtest run yet</h3>
+        <p>Enter your tickers and parameters in the panel, then click <strong>Run Backtest</strong> to see your portfolio analysis.</p>
+        <ul class="empty-list">
+          <li><span class="el-dot el-dot-green"></span>Inverse-volatility risk parity allocation</li>
+          <li><span class="el-dot el-dot-green"></span>SMA crossover signals with no look-ahead bias</li>
+          <li><span class="el-dot el-dot-orange"></span>Cross-asset correlation matrix</li>
+          <li><span class="el-dot el-dot-orange"></span>150-combination parameter optimization scan</li>
+        </ul>
+      </div>
+
+      <!-- Results -->
+      <div id="results-content" class="hidden">
+
+        <div class="results-header">
+          <div>
+            <h2 id="results-title" class="results-title">Results</h2>
+            <p id="results-subtitle" class="results-subtitle"></p>
+          </div>
+          <div id="ticker-badges" class="ticker-badges"></div>
+        </div>
+
+        <!-- Stat strip (horizontal, different from P1's card grid) -->
+        <div class="stat-strip">
+          <div class="strip-block">
+            <span class="strip-label">Strategy Value</span>
+            <span class="strip-value green" id="stat-strat-final">—</span>
+            <span class="strip-delta" id="stat-strat-return">—</span>
+          </div>
+          <div class="strip-divider"></div>
+          <div class="strip-block">
+            <span class="strip-label">Benchmark Value</span>
+            <span class="strip-value orange" id="stat-bh-final">—</span>
+            <span class="strip-delta" id="stat-bh-return">—</span>
+          </div>
+          <div class="strip-divider"></div>
+          <div class="strip-block">
+            <span class="strip-label">Sharpe Ratio</span>
+            <div class="strip-pair">
+              <div class="strip-pair-item">
+                <span class="strip-pair-label c-green">Strategy</span>
+                <span class="strip-pair-val" id="stat-strat-sharpe">—</span>
+              </div>
+              <span class="strip-pair-sep">vs</span>
+              <div class="strip-pair-item">
+                <span class="strip-pair-label c-orange">Benchmark</span>
+                <span class="strip-pair-val" id="stat-bh-sharpe">—</span>
+              </div>
+            </div>
+          </div>
+          <div class="strip-divider"></div>
+          <div class="strip-block">
+            <span class="strip-label">Max Drawdown</span>
+            <div class="strip-pair">
+              <div class="strip-pair-item">
+                <span class="strip-pair-label c-green">Strategy</span>
+                <span class="strip-pair-val" id="stat-strat-dd">—</span>
+              </div>
+              <span class="strip-pair-sep">vs</span>
+              <div class="strip-pair-item">
+                <span class="strip-pair-label c-orange">Benchmark</span>
+                <span class="strip-pair-val" id="stat-bh-dd">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 1: Equity Curve -->
+        <div class="chart-card chart-lg">
+          <div class="chart-hdr">
+            <h3>Portfolio Performance</h3>
+            <p class="chart-sub">$<span id="chart-capital">10,000</span> invested &mdash; Risk Parity Strategy vs Equal-Weight Benchmark</p>
+          </div>
+          <div id="chart-equity" class="chart-area"></div>
+        </div>
+
+        <!-- Row: Correlation | Drawdown -->
+        <div class="chart-row-2">
+          <div class="chart-card" id="corr-card">
+            <div class="chart-hdr">
+              <h3>Asset Correlation Matrix</h3>
+              <p class="chart-sub">Pearson correlation of daily returns across the portfolio</p>
+            </div>
+            <div id="chart-correlation" class="chart-area"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-hdr">
+              <h3>Drawdown Over Time</h3>
+              <p class="chart-sub">Distance from each curve's all-time high</p>
+            </div>
+            <div id="chart-drawdown" class="chart-area"></div>
+          </div>
+        </div>
+
+        <!-- Row: Rolling Returns | Rolling Vol -->
+        <div class="chart-row-2">
+          <div class="chart-card">
+            <div class="chart-hdr">
+              <h3>Rolling 20-Day Returns</h3>
+              <p class="chart-sub">Annualised rolling return — strategy vs benchmark</p>
+            </div>
+            <div id="chart-returns" class="chart-area"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-hdr">
+              <h3>Rolling Volatility per Asset</h3>
+              <p class="chart-sub">Annualised 20-day rolling standard deviation (%)</p>
+            </div>
+            <div id="chart-volatility" class="chart-area"></div>
+          </div>
+        </div>
+
+        <!-- Parameter scan CTA -->
+        <div class="scan-cta">
+          <div>
+            <h3>Parameter Optimization Scan</h3>
+            <p>Grid-search 150 Fast / Slow MA combinations across your portfolio using the same risk parity weighting to find the highest Sharpe Ratio.</p>
+          </div>
+          <button class="btn-scan" onclick="document.getElementById('optimize-btn').click()">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            Run Scan
+          </button>
+        </div>
+
+        <!-- Heatmap (visible after scan) -->
+        <div id="heatmap-section" class="hidden">
+          <div class="chart-card chart-lg">
+            <div class="chart-hdr">
+              <h3>Sharpe Ratio Optimization Heatmap</h3>
+              <p class="chart-sub" id="heatmap-sub">Greener = higher Sharpe Ratio</p>
+            </div>
+            <div id="chart-heatmap" class="chart-area chart-area-heatmap"></div>
+          </div>
+          <div id="optimal-banner" class="optimal-banner hidden">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" style="color:var(--gold);flex-shrink:0">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span class="opt-label">Best parameters found:</span>
+            <span id="optimal-text"></span>
+          </div>
+        </div>
+
+      </div><!-- /results-content -->
+    </main>
+
+  </div><!-- /app-body -->
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p>Built with Python, Flask &amp; Plotly &middot; Data from Yahoo Finance</p>
+    <p class="footer-name">Built by Abdullah Sultan</p>
+    <p class="footer-series">
+      Part of the QuantPy Series &middot; Project 2 of N
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      <a href="https://quantbacktesterpy.vercel.app" class="footer-link" target="_blank" rel="noopener">&larr; Project 1: Single Stock Backtester</a>
+    </p>
+  </footer>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
