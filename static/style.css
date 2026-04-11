@@ -141,7 +141,7 @@ body {
   border: 1px solid rgba(34, 197, 94, 0.28);
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.63rem;
+  font-size: 0.71rem;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -188,7 +188,7 @@ body {
   padding: 4px 11px;
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
   background: var(--bg-card);
@@ -257,7 +257,7 @@ body {
 }
 
 .feat-desc {
-  font-size: 0.76rem;
+  font-size: 0.83rem;
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -326,7 +326,7 @@ body {
 
 .loading-sub {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   color: var(--text-muted);
   letter-spacing: 0.03em;
 }
@@ -406,7 +406,7 @@ body {
 
 .sidebar-eyebrow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
+  font-size: 0.69rem;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -433,15 +433,15 @@ body {
   align-items: baseline;
   gap: 0.3rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
 
-.slider-val  { font-weight: 600; color: var(--green); font-size: 0.74rem; }
-.slider-unit { font-size: 0.58rem; color: var(--text-muted); font-weight: 400; }
+.slider-val  { font-weight: 600; color: var(--green); font-size: 0.84rem; }
+.slider-unit { font-size: 0.68rem; color: var(--text-muted); font-weight: 400; }
 
 .field input[type="text"],
 .field input[type="number"],
@@ -475,7 +475,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .field-hint {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.63rem;
+  font-size: 0.72rem;
   color: var(--text-dim);
 }
 
@@ -495,7 +495,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   align-items: center;
   padding: 0 0.65rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.74rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   background: var(--bg-elevated);
   white-space: nowrap; flex-shrink: 0;
@@ -553,7 +553,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: flex;
   justify-content: space-between;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.59rem;
+  font-size: 0.69rem;
   color: var(--text-dim);
   margin-top: 3px;
 }
@@ -628,7 +628,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .sidebar-note {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
+  font-size: 0.69rem;
   color: var(--text-dim);
   line-height: 1.7;
   margin-bottom: 1.1rem;
@@ -648,7 +648,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   align-items: center;
   gap: 0.5rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   color: var(--text-secondary);
 }
 
@@ -712,7 +712,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   align-items: center;
   gap: 0.55rem;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.71rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
@@ -745,7 +745,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .results-subtitle {
   font-family: 'JetBrains Mono', monospace;
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: 0.79rem;
   margin-top: 0.3rem;
   letter-spacing: 0.02em;
 }
@@ -758,7 +758,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border: 1px solid rgba(34, 197, 94, 0.25);
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.67rem;
+  font-size: 0.76rem;
   color: var(--green);
 }
 
@@ -796,7 +796,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .strip-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.61rem;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -832,7 +832,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .strip-pair-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -848,7 +848,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .strip-pair-sep {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   color: var(--text-dim);
   align-self: center;
 }
@@ -898,7 +898,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .chart-sub {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 
@@ -979,7 +979,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border: 1px solid rgba(34, 197, 94, 0.25);
   border-radius: var(--r-sm);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.77rem; color: var(--text-primary);
+  font-size: 0.84rem; color: var(--text-primary);
   animation: fadeSlideUp 0.4s var(--ease) both;
 }
 
@@ -995,13 +995,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   padding: 2.5rem;
   text-align: center;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   line-height: 2.3;
   color: var(--text-muted);
 }
 
-.footer-name   { color: var(--text-secondary); font-size: 0.75rem; font-weight: 500; }
-.footer-series { color: var(--text-dim); font-size: 0.64rem; }
+.footer-name   { color: var(--text-secondary); font-size: 0.82rem; font-weight: 500; }
+.footer-series { color: var(--text-dim); font-size: 0.72rem; }
 
 .footer-link {
   color: var(--green);
