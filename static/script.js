@@ -322,6 +322,12 @@ function renderResults(data) {
   document.getElementById("stat-bh-dd").textContent =
     a.buy_hold_max_dd != null ? a.buy_hold_max_dd.toFixed(2) + "%" : "—";
 
+  // Pulse-animate stat values
+  ['stat-strat-final','stat-bh-final'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('animate'); void el.offsetWidth; el.classList.add('animate'); }
+  });
+
   // Render charts with a short delay so DOM is painted
   setTimeout(() => {
     renderEquityChart(data);
